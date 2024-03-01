@@ -97,6 +97,7 @@ public:
                         continue; // Skip the current node itself
                     }
             
+                    // Coordinates of neighbout
                     Point newCoordinates(currentNode->coordinates.x + x, currentNode->coordinates.y + y);
             
                     // Check if the new coordinates are within the grid and not a wall
@@ -104,7 +105,11 @@ public:
                         continue;
                     }
             
-                    int newGCost = currentNode->gCost + ((x != 0 && y != 0) ? diagonalCost : straightCost);
+                    // Straight: |x|+|y|  = 1
+                    // Diagonal: |x|+|y| != 1
+                    //int newGCost = currentNode->gCost + ((x != 0 && y != 0) ? diagonalCost : straightCost);
+                    int newGCost = currentNode->gCost + ((abs(x)+abs(y) == 1) ? straightCost : diagonalCost);
+
                     Node* successor = new Node(newCoordinates, currentNode);
                     successor->gCost = newGCost;
                     successor->hCost = heuristic(successor->coordinates, end);
@@ -141,7 +146,7 @@ public:
     }
 
 private:
-    int diagonalCost = 3; 
+    int diagonalCost = sqrt(2); //1.42; 
     int straightCost = 1; 
     
     static int heuristic(const Point& a, const Point& b) {
