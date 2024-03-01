@@ -29,9 +29,9 @@ class AStar {
     struct Node {
         Point coordinates;
         Node* parent;
-        int gCost; // cost from start to current node
-        int hCost; // heuristic cost estimate to end
-        int fCost() const { return gCost + hCost; } // total cost
+        float gCost; // cost from start to current node
+        float hCost; // heuristic cost estimate to end
+        float fCost() const { return gCost + hCost; } // total cost
 
         Node(Point coord_, Node* parent_ = nullptr) : coordinates(coord_), parent(parent_), gCost(0), hCost(0) {}
     };
@@ -105,10 +105,10 @@ public:
                         continue;
                     }
             
-                    // Straight: |x|+|y|  = 1
-                    // Diagonal: |x|+|y| != 1
+                    // Straight: |x+y|  = 1
+                    // Diagonal: |x+y| != 1
                     //int newGCost = currentNode->gCost + ((x != 0 && y != 0) ? diagonalCost : straightCost);
-                    int newGCost = currentNode->gCost + ((abs(x)+abs(y) == 1) ? straightCost : diagonalCost);
+                    float newGCost = currentNode->gCost + ((abs(x+y) == 1) ? straightCost : diagonalCost);
 
                     Node* successor = new Node(newCoordinates, currentNode);
                     successor->gCost = newGCost;
@@ -146,11 +146,14 @@ public:
     }
 
 private:
-    int diagonalCost = sqrt(2); //1.42; 
-    int straightCost = 1; 
+    float diagonalCost = sqrt(2); //1.42; 
+    float straightCost = 1; 
     
-    static int heuristic(const Point& a, const Point& b) {
-        return abs(a.x - b.x) + abs(a.y - b.y);
+    static float heuristic(const Point& a, const Point& b) {
+        //return fabs(a.x - b.x) + abs(a.y - b.y);
+        float dx = a.x - b.x;
+        float dy = a.y - b.y;
+        return sqrt(dx*dx + dy*dy) + abs(a.y - b.y);
     }
 
     bool isInBounds(const Point& p) const {
